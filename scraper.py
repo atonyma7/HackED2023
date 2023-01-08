@@ -12,14 +12,20 @@ import json
 import sqlite3
 
 
-progress_num = 0
-progress_dem = 50
+progress_num = 50
+progress_dem = 134
 
-for page in range(0, 50): #Remember to update the number of pages 
+conn = sqlite3.connect('data.db')
+c = conn.cursor()
+
+c.execute('''CREATE TABLE IF NOT EXISTS reviews
+                (entity_name text, critic_name text, score text)''')
+
+for page in range(50, 134): #Remember to update the number of pages 
     print ("{percent:.2f}% completed".format(percent = progress_num/progress_dem * 100))
     print ("completed {pages} pages".format(pages = page))
     progress_num += 1
-    time.sleep(7)
+    time.sleep(5)
     url = 'https://www.metacritic.com/browse/albums/score/metascore/all/filtered?page=' + str(page)
     response = session.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -45,27 +51,9 @@ for page in range(0, 50): #Remember to update the number of pages
             date = review_content.find('div', class_='date')
             new_data = {"entity_name" : entity_name, "critic_name" : critic_name, "score" : score}
             reviews.append(new_data)
-
-    try:
-        with open("data.json", "w") as final:
-            json.dump(reviews, final)
-    except IOError:
-        print("I/O error")
-print (len(reviews))
-
-with open('data.json') as f:
-    data = json.load(f)
-
-conn = sqlite3.connect('data.db')
-c = conn.cursor()
-
-c.execute('''CREATE TABLE IF NOT EXISTS reviews
-                (entity_name text, critic_name text, score text)''')
-
-for review in data:
-    c.execute("INSERT INTO reviews VALUES (:entity_name, :critic_name, :score)", review)
-
-conn.commit()
+    for review in reviews:
+        c.execute("INSERT INTO reviews VALUES (:entity_name, :critic_name, :score)", review)
+    conn.commit()
 
 conn.close()
 
