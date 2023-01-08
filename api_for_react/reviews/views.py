@@ -105,6 +105,7 @@ def slider(request):
 
     template = loader.get_template('slider.html')
     return HttpResponse(template.render())
+
 def entity(request, entity_id):
     if request.method == 'POST':
         print(request.POST)
@@ -114,6 +115,7 @@ def entity(request, entity_id):
     std_dev = std(list(entity_scores))
     entity_dict = {"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore, "img_src" : entity.img_src}
     return render(request, 'entity.html', {"dict" : entity_dict})
+
 def similar(request):
     critic_dict = {}
     for userscore in UserscoreModel.objects.all():
@@ -126,11 +128,6 @@ def similar(request):
     sorted_dict = dict(sorted(critic_dict.items(), key=lambda x: abs(x[1])))
     print (sorted_dict)
     return render(request, 'similar.html', {"data" : sorted_dict})
-
-    
-            
-
-
 
 
 def review(request):
