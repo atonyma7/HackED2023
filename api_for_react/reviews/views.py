@@ -13,8 +13,12 @@ from .serializers import *
 from django.shortcuts import render, get_object_or_404
 from requests_html import HTMLSession
 from django.http import HttpResponse
+<<<<<<< HEAD
 from django.db.models import Avg
 
+=======
+from django.template import loader
+>>>>>>> e2a04f941ff9cc2cb28e7f605c6ced08444fe560
 
 from rest_framework.views import APIView
 
@@ -79,3 +83,8 @@ def entity_list(request):
         dev_list.append({"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore})
         
     return render(request, 'entity_list.html', {"list": dev_list})
+# Create your views here.
+
+def slider(request):
+    template = loader.get_template('slider.html')
+    return HttpResponse(template.render())
