@@ -1,5 +1,5 @@
 <ul>
     {% for item in list %}
-      <li>{{ item.entity_name }} {{item.metascore}} {{item.std_dev}}</li>
+      <li><img src={{item.img_src}} /> {{ item.entity_name }} {{item.metascore}} {{item.std_dev}}</li>
     {% endfor %} 
 </ul>

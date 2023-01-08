@@ -13,12 +13,9 @@ from .serializers import *
 from django.shortcuts import render, get_object_or_404
 from requests_html import HTMLSession
 from django.http import HttpResponse
-<<<<<<< HEAD
 from django.db.models import Avg
 
-=======
 from django.template import loader
->>>>>>> e2a04f941ff9cc2cb28e7f605c6ced08444fe560
 
 from rest_framework.views import APIView
 
@@ -80,7 +77,7 @@ def entity_list(request):
     for entity in EntityModel.objects.all():
         entity_scores = ReviewModel.objects.filter(entity=entity).values_list('score', flat=True).order_by('id')
         std_dev = std(list(entity_scores))
-        dev_list.append({"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore})
+        dev_list.append({"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore, "img_src" : entity.img_src})
         
     return render(request, 'entity_list.html', {"list": dev_list})
 # Create your views here.
