@@ -3,6 +3,9 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 import time
 from bs4 import BeautifulSoup
+from math import sqrt
+from numpy import std
+from django.shortcuts import render
 
 
 from .models import Review as ReviewModel, Entity as EntityModel
@@ -10,6 +13,8 @@ from .serializers import *
 from django.shortcuts import render, get_object_or_404
 from requests_html import HTMLSession
 from django.http import HttpResponse
+from django.db.models import Avg
+
 
 from rest_framework.views import APIView
 
@@ -66,6 +71,11 @@ def scrape(request):
     html = "<html><body>Finished</body></html>"
     return HttpResponse(html)
 
-# Create your views here.
-def controversiality_list(request):
-    return render(request, 'app/index.html', context)
+def entity_list(request):
+    dev_list = []
+    for entity in EntityModel.objects.all():
+        entity_scores = ReviewModel.objects.filter(entity=entity).values_list('score', flat=True).order_by('id')
+        std_dev = std(list(entity_scores))
+        dev_list.append({"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore})
+        
+    return render(request, 'entity_list.html', {"list": dev_list})
