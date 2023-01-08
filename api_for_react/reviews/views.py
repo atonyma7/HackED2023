@@ -5,10 +5,11 @@ import time
 from bs4 import BeautifulSoup
 
 
-from .models import Review as ReviewModel
+from .models import Review as ReviewModel, Entity as EntityModel
 from .serializers import *
 from django.shortcuts import render, get_object_or_404
 from requests_html import HTMLSession
+from django.http import HttpResponse
 
 from rest_framework.views import APIView
 
@@ -26,7 +27,7 @@ def scrape(request):
     progress_num = 0
     progress_dem = 20
     session = HTMLSession()
-    for page in range(0, 20): #Remember to update the number of pages 
+    for page in range(0, 10): #Remember to update the number of pages 
         print ("{percent:.2f}% completed".format(percent = progress_num/progress_dem * 100))
         print ("completed {pages} pages".format(pages = page))
         progress_num += 1
@@ -37,6 +38,7 @@ def scrape(request):
         reviews = []
         for block in soup.find_all('tr', class_=None):
             img_src = block.find('img')['src']
+            metascore = block.find('div', { "class" : ["metascore_w large release positive", "metascore_w large release mixed", "metascore_w large release negative"]}).text
             entity = block.find('a', class_='title')
             reviews_url = 'https://www.metacritic.com/' + entity['href'] + '/critic-reviews'
             response = session.get(reviews_url)
@@ -45,6 +47,7 @@ def scrape(request):
                 entity_name = soup.find('div', class_="product_title").find('a').find('h1').text
             except:
                 continue
+            newEntity = EntityModel.objects.create(name=entity_name, metascore=metascore, img_src=img_src)
             critics_section = soup.find('div', 'body product_reviews')
             for review_content in critics_section.find_all('div', class_='review_content'):
                 score = review_content.find('div', { "class" : ["metascore_w medium album positive indiv perfect", "metascore_w medium album positive indiv", "metascore_w medium album mixed indiv", "metascore_w medium album negative indiv"]}).text
@@ -57,10 +60,12 @@ def scrape(request):
                 review_text = review_content.find('div', class_='review_body')
                 date = review_content.find('div', class_='date')
                 try:
-                    ReviewModel.objects.create(name=entity_name, date=date, score=score, publication=critic_name, img_src=img_src)
+                    ReviewModel.objects.create(entity_name=entity_name, date=date, score=score, publication=critic_name, entity=newEntity)
                 except:
                     continue
     html = "<html><body>Finished</body></html>"
     return HttpResponse(html)
 
 # Create your views here.
+def controversiality_list(request):
+    return render(request, 'app/index.html', context)
