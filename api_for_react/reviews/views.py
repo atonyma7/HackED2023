@@ -9,6 +9,8 @@ from .models import Review as ReviewModel
 from .serializers import *
 from django.shortcuts import render, get_object_or_404
 from requests_html import HTMLSession
+from django.template import loader
+from django.http import HttpResponse
 
 from rest_framework.views import APIView
 
@@ -64,3 +66,7 @@ def scrape(request):
     return HttpResponse(html)
 
 # Create your views here.
+
+def slider(request):
+    template = loader.get_template('slider.html')
+    return HttpResponse(template.render())
