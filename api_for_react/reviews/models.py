@@ -28,3 +28,10 @@ class Review(models.Model):
                 fields=['entity_name', 'publication', 'review_text'], name='unique'
             )
         ]
+class Userscore(models.Model):
+    id = models.AutoField(unique=True, null=False,
+                          blank=False, primary_key=True)
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, default=None)
+    userscore = models.PositiveIntegerField("Userscore")
+
+    
