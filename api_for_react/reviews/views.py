@@ -112,7 +112,7 @@ def entity(request, entity_id):
 
     entity_scores = ReviewModel.objects.filter(entity=entity).values_list('score', flat=True).order_by('id')
     std_dev = std(list(entity_scores))
-    userscore = UserscoreModel.objects.filter(entity=entity)[0].userscore
+    userscore = UserscoreModel.objects.values_list('userscore', flat = True)
     entity_dict = {"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore, "img_src" : entity.img_src, "userscore" : userscore}
     form = ReviewForm()
 
