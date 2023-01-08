@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from reviews.models import Review, Entity
+from reviews.models import Review, Entity, Userscore
 
 
 # Register your models here.
@@ -13,8 +13,10 @@ class EntityAdmin(admin.ModelAdmin):
     list_display = ['name', 'metascore', 'img_src']
 
 
+class UserscoreAdmin(admin.ModelAdmin):
+    search_fields = ['entity', 'userscore']
+    list_display = ['entity', 'userscore']
 
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Entity, EntityAdmin)
-
-
+admin.site.register(Userscore, UserscoreAdmin)
