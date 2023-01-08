@@ -21,6 +21,7 @@ class Review(models.Model):
     date = models.DateField("Date",auto_now_add = True)
     review_text = models.TextField("Review_text", default=' ')
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE, default=None)
+    scoreU = models.PositiveIntegerField("scoreU")
 
     class Meta:
         constraints = [
