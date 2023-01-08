@@ -8,11 +8,13 @@ class Review(models.Model):
     score = models.PositiveIntegerField("Score")
     publication = models.CharField("Publication", max_length=250)
     date = models.DateField("Date",auto_now_add = True)
+    img_src = models.CharField("Img_src", max_length=250)
+    review_text = models.TextField("Review_text", default=' ')
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['name', 'publication'], name='unique'
+                fields=['name', 'publication', 'review_text'], name='unique'
             )
         ]
 

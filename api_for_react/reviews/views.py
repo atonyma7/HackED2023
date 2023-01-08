@@ -35,7 +35,9 @@ def scrape(request):
         response = session.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
         reviews = []
-        for entity in soup.find_all('a', class_='title'):
+        for block in soup.find_all('tr', class_=None):
+            img_src = block.find('img')['src']
+            entity = block.find('a', class_='title')
             reviews_url = 'https://www.metacritic.com/' + entity['href'] + '/critic-reviews'
             response = session.get(reviews_url)
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -54,7 +56,10 @@ def scrape(request):
                     critic_name = source.text
                 review_text = review_content.find('div', class_='review_body')
                 date = review_content.find('div', class_='date')
-                ReviewModel.objects.create(name=entity_name, date=date, score=score, publication=critic_name)
+                try:
+                    ReviewModel.objects.create(name=entity_name, date=date, score=score, publication=critic_name, img_src=img_src)
+                except:
+                    continue
     html = "<html><body>Finished</body></html>"
     return HttpResponse(html)
 
