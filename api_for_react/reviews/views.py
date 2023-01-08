@@ -105,7 +105,6 @@ def slider(request):
 
     template = loader.get_template('slider.html')
     return HttpResponse(template.render())
-
 def entity(request, entity_id):
     entity = get_object_or_404(EntityModel, id=entity_id)
     if request.method == 'POST':
@@ -113,12 +112,14 @@ def entity(request, entity_id):
 
     entity_scores = ReviewModel.objects.filter(entity=entity).values_list('score', flat=True).order_by('id')
     std_dev = std(list(entity_scores))
-    userscore = UserscoreModel.objects.values_list('userscore', flat = True)
+    if len(UserscoreModel.objects.filter(entity=entity)) == 0:
+        userscore = None
+    else:
+        userscore = UserscoreModel.objects.filter(entity=entity)[0].userscore
     entity_dict = {"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore, "img_src" : entity.img_src, "userscore" : userscore}
     form = ReviewForm()
 
     return render(request, 'entity.html', {"dict" : entity_dict, "form" : form})
-    
 def similar(request):
     critic_dict = {}
     for userscore in UserscoreModel.objects.all():
