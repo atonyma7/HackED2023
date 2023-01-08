@@ -1,0 +1,8 @@
+<h1>List of critics ranked by similarity to the user</h1>
+
+<ol>
+    {% for key, value in data.items %}
+        <li>{{ key }}, Similarity Index: {{ value }}</li>
+    {% endfor %}
+</ol>
+

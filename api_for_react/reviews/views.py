@@ -8,7 +8,7 @@ from numpy import std
 from django.shortcuts import render
 
 
-from .models import Review as ReviewModel, Entity as EntityModel
+from .models import Review as ReviewModel, Entity as EntityModel, Userscore as UserscoreModel
 from .serializers import *
 from django.shortcuts import render, get_object_or_404
 from requests_html import HTMLSession
@@ -85,3 +85,30 @@ def entity_list(request):
 def slider(request):
     template = loader.get_template('slider.html')
     return HttpResponse(template.render())
+def entity(request, entity_id):
+    if request.method == 'POST':
+        print(request.POST)
+
+    entity = get_object_or_404(EntityModel, id=entity_id)
+    entity_scores = ReviewModel.objects.filter(entity=entity).values_list('score', flat=True).order_by('id')
+    std_dev = std(list(entity_scores))
+    entity_dict = {"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore, "img_src" : entity.img_src}
+    return render(request, 'entity.html', {"dict" : entity_dict})
+def similar(request):
+    critic_dict = {}
+    for userscore in UserscoreModel.objects.all():
+        print (ReviewModel.objects.filter(entity=userscore.entity))
+        for review in ReviewModel.objects.filter(entity=userscore.entity):
+            if review.publication in critic_dict.keys():
+                critic_dict[review.publication] += (userscore.userscore - review.score)
+            else:
+                critic_dict[review.publication] = (userscore.userscore - review.score)
+    sorted_dict = dict(sorted(critic_dict.items(), key=lambda x: abs(x[1])))
+    print (sorted_dict)
+    return render(request, 'similar.html', {"data" : sorted_dict})
+
+    
+            
+
+
+
