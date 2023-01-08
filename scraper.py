@@ -12,9 +12,9 @@ import json
 
 
 progress_num = 0
-progress_dem = 133
+progress_dem = 50
 
-for page in range(0, 20): #Remember to update the number of pages 
+for page in range(0, 50): #Remember to update the number of pages 
     print ("{percent:.2f}% completed".format(percent = progress_num/progress_dem * 100))
     print ("completed {pages} pages".format(pages = page))
     progress_num += 1
@@ -45,11 +45,11 @@ for page in range(0, 20): #Remember to update the number of pages
             new_data = {"entity_name" : entity_name, "critic_name" : critic_name, "score" : score, "date" : date.text if date else None}
             reviews.append(new_data)
 
-        try:
-            with open("data.json", "w") as final:
-                json.dump(reviews, final)
-        except IOError:
-            print("I/O error")
+    try:
+        with open("data.json", "w") as final:
+            json.dump(reviews, final)
+    except IOError:
+        print("I/O error")
 print (len(reviews))
 
 
