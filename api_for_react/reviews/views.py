@@ -107,15 +107,18 @@ def slider(request):
     return HttpResponse(template.render())
 
 def entity(request, entity_id):
-    if request.method == 'POST':
-        print(request.POST)
-
     entity = get_object_or_404(EntityModel, id=entity_id)
+    if request.method == 'POST':
+        UserscoreModel.objects.update_or_create(entity=entity, defaults = {"userscore" : request.POST['user_score']})
+
     entity_scores = ReviewModel.objects.filter(entity=entity).values_list('score', flat=True).order_by('id')
     std_dev = std(list(entity_scores))
-    entity_dict = {"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore, "img_src" : entity.img_src}
-    return render(request, 'entity.html', {"dict" : entity_dict})
+    userscore = UserscoreModel.objects.filter(entity=entity)[0].userscore
+    entity_dict = {"entity_name" : entity.name, "std_dev" : std_dev, "metascore" : entity.metascore, "img_src" : entity.img_src, "userscore" : userscore}
+    form = ReviewForm()
 
+    return render(request, 'entity.html', {"dict" : entity_dict, "form" : form})
+    
 def similar(request):
     critic_dict = {}
     for userscore in UserscoreModel.objects.all():
@@ -128,17 +131,3 @@ def similar(request):
     sorted_dict = dict(sorted(critic_dict.items(), key=lambda x: abs(x[1])))
     print (sorted_dict)
     return render(request, 'similar.html', {"data" : sorted_dict})
-
-
-def review(request):
-    if request.method == 'POST':
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            # process the form data and store it in the database
-            score = form.cleaned_data['score']
-            review = Review(scoreU=score)
-            #review.save()
-    else:
-        form = ReviewForm()
-
-    return render(request, 'review.html', {'form': form})

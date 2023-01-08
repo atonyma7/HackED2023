@@ -1,4 +1,4 @@
 from django import forms
 
 class ReviewForm(forms.Form):
-    score = forms.IntegerField()
+    user_score = forms.IntegerField()
