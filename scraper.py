@@ -12,8 +12,8 @@ import json
 import sqlite3
 
 
-progress_num = 50
-progress_dem = 134
+progress_num = 0
+progress_dem = 50
 
 conn = sqlite3.connect('data.db')
 c = conn.cursor()
@@ -21,7 +21,7 @@ c = conn.cursor()
 c.execute('''CREATE TABLE IF NOT EXISTS reviews
                 (entity_name text, critic_name text, score text)''')
 
-for page in range(50, 134): #Remember to update the number of pages 
+for page in range(0, 50): #Remember to update the number of pages 
     print ("{percent:.2f}% completed".format(percent = progress_num/progress_dem * 100))
     print ("completed {pages} pages".format(pages = page))
     progress_num += 1
