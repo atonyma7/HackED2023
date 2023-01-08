@@ -8,7 +8,6 @@ urlpatterns = [
     path('api/scrape', views.scrape, name='scrape'),
     path('entitylist', views.entity_list, name='entitylist'),
     path('test', views.slider, name='slider'),
-    path('rev', views.review, name='review'),
     path('entity/<int:entity_id>', views.entity, name='entity'),
     path('similar', views.similar, name='similar')
 ]
