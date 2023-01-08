@@ -9,6 +9,7 @@ import pandas as pd
 from requests_html import HTMLSession
 session = HTMLSession()
 import json
+import sqlite3
 
 
 progress_num = 0
@@ -42,7 +43,7 @@ for page in range(0, 50): #Remember to update the number of pages
                 critic_name = source.text
             review_text = review_content.find('div', class_='review_body')
             date = review_content.find('div', class_='date')
-            new_data = {"entity_name" : entity_name, "critic_name" : critic_name, "score" : score, "date" : date.text if date else None}
+            new_data = {"entity_name" : entity_name, "critic_name" : critic_name, "score" : score}
             reviews.append(new_data)
 
     try:
@@ -52,5 +53,20 @@ for page in range(0, 50): #Remember to update the number of pages
         print("I/O error")
 print (len(reviews))
 
+with open('data.json') as f:
+    data = json.load(f)
+
+conn = sqlite3.connect('data.db')
+c = conn.cursor()
+
+c.execute('''CREATE TABLE IF NOT EXISTS reviews
+                (entity_name text, critic_name text, score text)''')
+
+for review in data:
+    c.execute("INSERT INTO reviews VALUES (:entity_name, :critic_name, :score)", review)
+
+conn.commit()
+
+conn.close()
 
 
